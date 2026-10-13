@@ -65,9 +65,20 @@ abre la URL en el navegador: debe cargar el formulario de "Creciendo Sano".
 - Error 502/503 al abrir la URL justo después del deploy: el servicio
   puede estar todavía arrancando (carga ~45 MB de artefactos en memoria);
   espera 30-60 segundos y recarga.
-- Si el build falla instalando `catboost` o `pandas`: confirma que
-  `PYTHON_VERSION` esté en `3.11.9` (definido en `render.yaml`); versiones
-  más nuevas de Python a veces no tienen wheels precompilados aún.
+- Si el build falla instalando `catboost` o `pandas` (error tipo
+  `AttributeError: 'Distribution' object has no attribute 'dry_run'` o
+  "Failed building wheel for catboost"): Render está usando una versión de
+  Python demasiado nueva (sin wheel precompilado para `catboost`, que
+  termina compilándose desde cero y falla). `render.yaml` fija
+  `PYTHON_VERSION=3.11.9`, pero esa variable **solo se aplica si creaste el
+  servicio con el botón "New + → Blueprint"** (el que lee `render.yaml`
+  automáticamente). Si lo creaste con "New + → Web Service" a mano, Render
+  ignora `render.yaml` por completo y usa su versión de Python más
+  reciente por defecto. El repo ya incluye un archivo `.python-version`
+  (con `3.11.9`), que Render sí respeta en ambos flujos; si el problema
+  persiste, fija la versión también a mano: en el servicio → **Environment**
+  → **Add Environment Variable** → `PYTHON_VERSION` = `3.11.9` → guarda y
+  dispara un **Manual Deploy → Clear build cache & deploy**.
 
 ## 4. Actualizar la app en el futuro
 
@@ -98,6 +109,17 @@ pestaña **Events**).
   de servicio conviene vigilar el uso de memoria en la pestaña **Metrics**.
 - Sin dominio propio en el plan free (usa el subdominio `.onrender.com`);
   se puede añadir un dominio personalizado en planes pagos.
+
+## No importar este repo en Vercel
+
+Si ya creaste un proyecto en Vercel apuntando a este mismo repositorio,
+bórralo: Vercel empaqueta cada app como una función serverless con un
+límite de 500 MB, y este backend (catboost + pandas + numpy + ~45 MB de
+artefactos) pesa cerca de 680 MB — no es un problema de dependencias de
+más, es que este tipo de app (modelo cargado en memoria, proceso de larga
+duración) no es lo que una función serverless está hecha para servir.
+Render, en cambio, corre un servidor persistente (sin ese límite de
+tamaño), que es exactamente lo que `app.py` necesita.
 
 ## Si separas el frontend (Vercel)
 
