@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Creciendo Sano — apoyo al tamizaje de anemia</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Public+Sans:wght@400;500;600;700&display=swap">
+<style>
+:root{
+  --bg:#FAF9F5; --card:#FFFFFF; --line:#E4E0D7; --line-soft:#F1EEE5;
+  --ink:#141413; --ink2:#3B3833; --mut:#6B6560; --mut2:#4A4640;
+  --accent:#A9502F; --accent-ink:#8F2F16; --accent-soft:#FDEDE7; --accent-line:#EFC3AE;
+  --high:#A93A20; --low:#14706A; --low-ink:#0F5551;
+  --chip:#F6F4EC;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:'Public Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45}
+h1,h2{font-family:'Fraunces',Georgia,serif}
+a{color:var(--accent)}
+input,select,button,textarea{font-family:inherit}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 24px 40px}
+header{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;margin-bottom:18px}
+.brand{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.brand .mark{display:inline-flex;width:34px;height:34px;flex-shrink:0;align-items:center;justify-content:center;border-radius:10px;background:var(--ink)}
+.brand h1{margin:0;font-size:22px;font-weight:600}
+.brand h1 .h1-sub{font-size:16px;font-weight:500;color:var(--mut2)}
+@media (max-width:720px){.brand h1 .h1-sub{display:block;font-size:14px;margin-top:2px}}
+.brand .sub{font-size:13px;color:var(--mut);display:block}
+.badge-real{font-size:12px;font-weight:700;color:var(--low-ink);background:#EAF4F1;border:1px solid #BFE0D8;border-radius:999px;padding:4px 11px;white-space:nowrap}
+.btn-help{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 16px;font-size:14px;font-weight:600;color:var(--mut2);background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
+
+.grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.14fr);gap:18px;align-items:start}
+@media (max-width:920px){.grid{grid-template-columns:1fr}}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+fieldset{border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+legend{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--mut);padding:0;margin-bottom:9px}
+legend svg{flex-shrink:0}
+.row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.row2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+@media (max-width:480px){.row3,.row2{grid-template-columns:1fr}}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:13px;font-weight:600;color:var(--mut2)}
+.field .hint{font-size:12px;color:var(--mut);margin-top:1px}
+.field input,.field select{height:46px;padding:0 10px;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:9px;width:100%}
+.field input:disabled{color:var(--mut);background:var(--line-soft)}
+.hr{height:1px;background:var(--line);margin:4px 0}
+.stat-row{display:flex;align-items:center;gap:9px;padding:9px 12px;background:var(--chip);border-radius:9px;flex-wrap:wrap}
+.stat-row span.l{font-size:13px;color:var(--mut)}
+.stat-row strong{font-size:13px;font-variant-numeric:tabular-nums}
+.sep{width:1px;height:14px;background:var(--line)}
+.progs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+@media (max-width:560px){.progs{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.chk{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 10px;background:var(--bg);border:1px solid var(--line);border-radius:9px;font-size:14px;cursor:pointer}
+.chk input{width:18px;height:18px;flex-shrink:0;accent-color:var(--accent)}
+.hist-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.hist-toggle label{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;font-weight:600;color:var(--mut2);cursor:pointer}
+.hist-toggle input{width:18px;height:18px;accent-color:var(--accent)}
+.actions{display:flex;gap:10px;margin-top:6px}
+.btn-ghost{min-height:50px;padding:0 18px;font-size:15px;font-weight:600;color:var(--mut2);background:var(--bg);border:1px solid var(--line);border-radius:11px;cursor:pointer}
+.btn-primary{flex-grow:1;display:inline-flex;align-items:center;justify-content:center;gap:9px;min-height:50px;font-size:16px;font-weight:600;color:var(--bg);background:var(--accent);border:none;border-radius:11px;cursor:pointer}
+.btn-primary:disabled{opacity:.55;cursor:default}
+.btn-primary:hover:not(:disabled){filter:brightness(1.06)}
+.err-msg{color:var(--high);font-size:13px;margin:0}
+
+/* ---- number stepper (peso/talla) ---- */
+.stepper-input{display:flex;align-items:stretch;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--bg)}
+.stepper-input input{border:none;border-left:1px solid var(--line);border-right:1px solid var(--line);border-radius:0;text-align:center;height:46px;font-size:16px;width:100%;background:var(--bg);-moz-appearance:textfield}
+.stepper-input input::-webkit-outer-spin-button,.stepper-input input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.num-btn{width:44px;flex-shrink:0;border:none;background:var(--chip);color:var(--ink2);font-size:21px;font-weight:600;cursor:pointer;line-height:1}
+.num-btn:hover{background:var(--line-soft)}
+
+/* ---- stepper (paso 1-2-3) ---- */
+.stepper{display:flex;align-items:center;margin-bottom:18px}
+.step-pip{display:flex;align-items:center;gap:9px;background:none;border:none;padding:0;cursor:pointer;flex-shrink:0}
+.step-pip .num{display:inline-flex;width:30px;height:30px;flex-shrink:0;align-items:center;justify-content:center;border-radius:999px;background:var(--line-soft);color:var(--mut);font-size:14px;font-weight:700;border:1px solid var(--line)}
+.step-pip .lbl{font-size:13px;font-weight:600;color:var(--mut);text-align:left}
+.step-pip.active .num{background:var(--accent);color:var(--bg);border-color:var(--accent)}
+.step-pip.active .lbl{color:var(--ink)}
+.step-pip.done .num{background:var(--low);color:var(--bg);border-color:var(--low)}
+.step-pip.done .lbl{color:var(--low-ink)}
+.step-line{flex:1;height:1px;background:var(--line);margin:0 10px;min-width:16px}
+@media (max-width:480px){.step-pip .lbl{display:none}.step-pip .num{width:26px;height:26px;font-size:12px}.step-line{margin:0 6px}}
+
+.step-panel{display:flex;flex-direction:column;gap:16px}
+.step-panel[hidden]{display:none}
+.step-nav{display:flex;gap:10px;margin-top:4px}
+
+#placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;min-height:420px;color:var(--mut);text-align:center;padding:40px}
+#placeholder svg{opacity:.5}
+
+#resultado{display:none;flex-direction:column;gap:14px}
+.hero{display:flex;gap:22px;padding:22px;background:var(--card);border:1px solid var(--line);border-radius:16px;flex-wrap:wrap}
+.hero-left{width:260px;flex-shrink:0;display:flex;flex-direction:column;gap:12px}
+.prob{font-family:'Fraunces',Georgia,serif;font-size:60px;font-weight:600;line-height:1;color:var(--accent-ink)}
+.prob small{font-size:30px}
+.prob-label{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--mut);margin-top:-6px}
+.hero-left p{margin:0;font-size:15px;line-height:1.5;color:var(--ink2)}
+.pill{display:inline-flex;align-items:center;gap:9px;align-self:flex-start;padding:10px 15px;border-radius:999px;font-size:15px;font-weight:700}
+.pill.alto{background:var(--accent-soft);border:1px solid var(--accent-line);color:var(--accent-ink)}
+.pill.bajo{background:#EAF4F1;border:1px solid #BFE0D8;color:var(--low-ink)}
+.pill .dot{width:10px;height:10px;border-radius:999px}
+.pill.alto .dot{background:var(--high)}
+.pill.bajo .dot{background:var(--low)}
+.hero-right{flex:1;min-width:220px;display:flex;flex-direction:column;gap:10px}
+.dots{display:grid;grid-template-columns:repeat(20,1fr);gap:5px}
+.dots span{aspect-ratio:1;border-radius:2px;background:var(--line-soft)}
+.dots span.on{background:var(--high)}
+.dots span.avg{outline:2px solid var(--ink);outline-offset:-2px}
+.legend{display:flex;gap:18px;flex-wrap:wrap;font-size:13px;color:var(--mut2)}
+.legend .sw{display:inline-flex;align-items:center;gap:7px}
+.legend .sq{width:11px;height:11px;border-radius:3px}
+
+.tabs{display:flex;gap:8px;flex-wrap:wrap}
+.tab-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 16px;font-size:14px;font-weight:600;color:var(--mut2);background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
+.tab-btn.active{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.tab-panel{display:none;padding:22px;background:var(--card);border:1px solid var(--line);border-radius:16px}
+.tab-panel.active{display:block}
+.tab-intro{margin:0 0 14px;font-size:14px;color:var(--mut)}
+.factor-row{display:grid;grid-template-columns:minmax(120px,232px) minmax(0,1fr) 80px;gap:14px;align-items:center;margin-bottom:10px}
+@media (max-width:480px){.factor-row{grid-template-columns:1fr;gap:4px}.factor-dir{text-align:left}}
+.factor-row .flabel{font-size:15px;font-weight:600}
+.factor-track{display:flex;height:22px}
+.factor-fill{height:100%;border-radius:5px}
+.factor-fill.sube{background:var(--high)}
+.factor-fill.baja{background:var(--low)}
+.factor-dir{text-align:right;font-size:13px;font-weight:700}
+.factor-dir.sube{color:var(--accent-ink)}
+.factor-dir.baja{color:var(--low-ink)}
+.step{display:flex;gap:14px;align-items:flex-start;margin-bottom:14px}
+.step .n{display:inline-flex;width:32px;height:32px;flex-shrink:0;align-items:center;justify-content:center;border-radius:999px;background:var(--accent);color:var(--bg);font-size:14px;font-weight:700}
+.step .t{font-size:16px;font-weight:600;display:block}
+.step .d{font-size:14px;color:var(--mut);display:block;margin-top:2px;line-height:1.5}
+.note-box{display:flex;gap:12px;padding:14px 16px;background:var(--chip);border-radius:12px;font-size:14px;color:var(--ink2);line-height:1.5}
+
+/* ---- mensaje para la familia ---- */
+#msg-familia{width:100%;min-height:200px;padding:14px;font-size:15px;line-height:1.6;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:12px;resize:vertical;white-space:pre-wrap}
+.msg-actions{display:flex;align-items:center;gap:10px;margin-top:12px;flex-wrap:wrap}
+.btn-accent{display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:0 18px;font-size:14px;font-weight:600;color:var(--bg);background:var(--ink);border:none;border-radius:11px;cursor:pointer}
+.msg-copiado{font-size:13px;font-weight:600;color:var(--low-ink);display:none}
+
+footer{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:18px;font-size:13px;color:var(--mut)}
+
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(20,20,19,.55);align-items:center;justify-content:center;z-index:50;padding:20px}
+.modal-bg.open{display:flex}
+.modal{width:100%;max-width:640px;max-height:90vh;overflow:auto;display:flex;flex-direction:column;gap:18px;padding:30px;background:var(--bg);border-radius:20px}
+.modal h2{margin:0;font-size:26px;font-weight:600}
+.modal-close{display:inline-flex;width:40px;height:40px;flex-shrink:0;align-items:center;justify-content:center;background:var(--card);border:1px solid var(--line);border-radius:999px;cursor:pointer}
+.modal-warn{display:flex;gap:12px;padding:16px;background:var(--accent-soft);border:1px solid var(--accent-line);border-radius:12px;font-size:14px;line-height:1.5;color:#6B3A24}
+.modal-done{align-self:flex-end;min-height:46px;padding:0 22px;font-size:15px;font-weight:600;color:var(--bg);background:var(--ink);border:none;border-radius:11px;cursor:pointer}
+
+.print-only{display:none}
+@media print{
+  body *{display:none !important}
+  #print-mensaje{display:block !important;white-space:pre-wrap;font-family:'Public Sans',sans-serif;font-size:14px;line-height:1.6;padding:24px;color:#141413}
+}
+</style>
+</head><body>
+<div class="wrap">
+
+<header>
+  <div class="brand">
+    <span class="mark"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21V10"></path><path d="M12 10c0-3.5-2.5-6-6-6 0 3.5 2.5 6 6 6Z"></path><path d="M12 13c0-3.5 2.5-6 6-6 0 3.5-2.5 6-6 6Z"></path></svg></span>
+    <div>
+      <h1>Creciendo Sano <span class="h1-sub">· Sistema de tamizaje de anemia infantil</span></h1>
+      <span class="sub">Apoyo para docentes de educación básica · Lima</span>
+    </div>
+    <span class="badge-real">Versión real del sistema, no una simulación</span>
+  </div>
+  <button type="button" class="btn-help" id="btn-ayuda">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4640" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.5a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 2-2.4 3.4"></path><path d="M12 17v.5"></path></svg>
+    ¿Cómo funciona?
+  </button>
+</header>
+
+<div class="grid">
+
+  <form class="card" id="f">
+
+    <div class="stepper" id="stepper">
+      <button type="button" class="step-pip active" data-step="1"><span class="num">1</span><span class="lbl">Niña o niño</span></button>
+      <div class="step-line"></div>
+      <button type="button" class="step-pip" data-step="2"><span class="num">2</span><span class="lbl">Centro de salud</span></button>
+      <div class="step-line"></div>
+      <button type="button" class="step-pip" data-step="3"><span class="num">3</span><span class="lbl">Antecedentes</span></button>
+    </div>
+
+    <!-- PASO 1 -->
+    <div class="step-panel" data-step="1">
+      <fieldset>
+        <legend>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3.2"></circle><path d="M6 20c0-3.6 2.7-6.2 6-6.2s6 2.6 6 6.2"></path></svg>
+          Datos de la niña o el niño
+        </legend>
+        <div class="row3">
+          <div class="field"><label for="sexo">Sexo</label>
+            <select id="sexo"><option value="F">Femenino</option><option value="M">Masculino</option></select></div>
+          <div class="field"><label for="fnac">Fecha de nacimiento</label>
+            <input id="fnac" type="date" required></div>
+          <div class="field"><label for="fatt">Fecha del tamizaje</label>
+            <input id="fatt" type="date" required></div>
+        </div>
+        <div class="row2">
+          <div class="field"><label for="peso">Peso (kg)</label>
+            <div class="stepper-input">
+              <button type="button" class="num-btn" data-target="peso" data-step="-0.1" aria-label="Disminuir peso">−</button>
+              <input id="peso" type="number" inputmode="decimal" step="0.1" min="2" max="40" placeholder="11.8" required>
+              <button type="button" class="num-btn" data-target="peso" data-step="0.1" aria-label="Aumentar peso">+</button>
+            </div>
+          </div>
+          <div class="field"><label for="talla">Talla (cm)</label>
+            <div class="stepper-input">
+              <button type="button" class="num-btn" data-target="talla" data-step="-0.5" aria-label="Disminuir talla">−</button>
+              <input id="talla" type="number" inputmode="decimal" step="0.5" min="40" max="140" placeholder="84.5" required>
+              <button type="button" class="num-btn" data-target="talla" data-step="0.5" aria-label="Aumentar talla">+</button>
+            </div>
+          </div>
+        </div>
+        <div class="stat-row">
+          <span class="l">Edad</span><strong id="st-edad">—</strong>
+          <span class="sep"></span>
+          <span class="l">IMC</span><strong id="st-imc">—</strong>
+          <span class="sep"></span>
+          <span class="l">Peso/edad</span><strong id="st-pm">—</strong>
+          <span class="sep"></span>
+          <span class="l">Talla/edad</span><strong id="st-tm">—</strong>
+        </div>
+      </fieldset>
+      <p class="err-msg" style="display:none"></p>
+      <div class="step-nav">
+        <button type="button" class="btn-primary" data-goto="2">Siguiente
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="step-panel" data-step="2" hidden>
+      <fieldset>
+        <legend>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-5.1-6.5-10.5a6.5 6.5 0 0 1 13 0C18.5 15.9 12 21 12 21Z"></path><path d="M12 8v5"></path><path d="M9.5 10.5h5"></path></svg>
+          Establecimiento de salud de referencia
+        </legend>
+        <input type="hidden" id="prov">
+        <div class="row2">
+          <div class="field"><label for="dist">Distrito</label><select id="dist"></select></div>
+          <div class="field"><label for="alt">Altitud (m)</label><input id="alt" type="text" disabled></div>
+        </div>
+        <div class="field">
+          <label for="eess_select">Establecimiento de salud</label>
+          <select id="eess_select" required>
+            <option value="">Seleccione un establecimiento…</option>
+          </select>
+        </div>
+      </fieldset>
+      <p class="err-msg" style="display:none"></p>
+      <div class="step-nav">
+        <button type="button" class="btn-ghost" data-goto="1">Atrás</button>
+        <button type="button" class="btn-primary" data-goto="3">Siguiente
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="step-panel" data-step="3" hidden>
+      <fieldset>
+        <legend>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="4" width="14" height="17" rx="2"></rect><path d="M9 2.8h6a1 1 0 0 1 1 1V5H8v-1.2a1 1 0 0 1 1-1Z"></path><path d="M8.5 11h7"></path><path d="M8.5 14.5h7"></path><path d="M8.5 18h4"></path></svg>
+          Programas y atenciones
+        </legend>
+        <span class="hint" style="margin-top:-4px">Marque solo lo que sepa con certeza.</span>
+        <div class="progs">
+          <label class="chk" for="p-sis"><input id="p-sis" type="checkbox">SIS</label>
+          <label class="chk" for="p-juntos"><input id="p-juntos" type="checkbox">Juntos</label>
+          <label class="chk" for="p-qali"><input id="p-qali" type="checkbox">Qali Warma</label>
+          <label class="chk" for="p-cred"><input id="p-cred" type="checkbox">CRED</label>
+          <label class="chk" for="p-supl"><input id="p-supl" type="checkbox">Hierro</label>
+          <label class="chk" for="p-cons"><input id="p-cons" type="checkbox">Consejería</label>
+          <label class="chk" for="p-ses"><input id="p-ses" type="checkbox">Sesión</label>
+        </div>
+      </fieldset>
+
+      <div class="hr"></div>
+
+      <fieldset>
+        <div class="hist-toggle">
+          <legend style="margin:0">Control de hemoglobina anterior</legend>
+          <label for="tiene-hist"><input id="tiene-hist" type="checkbox">Tiene uno registrado</label>
+        </div>
+        <div class="row3" id="hist-fields" style="display:none">
+          <div class="field"><label for="hb-prev">Hemoglobina (g/dL)</label><input id="hb-prev" type="number" inputmode="decimal" step="0.1" min="3" max="20" placeholder="11.2"></div>
+          <div class="field"><label for="f-prev">Fecha de ese control</label><input id="f-prev" type="date"></div>
+          <div class="field"><label for="n-visitas">N.° de controles previos</label><input id="n-visitas" type="number" inputmode="numeric" min="0" max="30" placeholder="3"></div>
+        </div>
+        <span class="hint">Si no lo sabe con certeza, déjelo sin marcar.</span>
+      </fieldset>
+
+      <p class="err-msg" style="display:none"></p>
+      <div class="step-nav">
+        <button type="button" class="btn-ghost" data-goto="2">Atrás</button>
+        <button type="submit" class="btn-primary" id="btn-calcular">
+          Ver resultado
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+      <button type="button" class="btn-ghost" id="btn-limpiar" style="align-self:flex-start">Empezar de nuevo</button>
+    </div>
+  </form>
+
+  <div>
+    <div id="placeholder" class="card">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#6B6560" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-4.6-7-10a7 7 0 0 1 14 0c0 5.4-7 10-7 10z"></path><path d="M9 11h6"></path></svg>
+      <p>Complete los 3 pasos del formulario y presione <strong>Ver resultado</strong>.</p>
+    </div>
+
+    <div id="resultado" role="region" aria-live="polite">
+      <div class="hero">
+        <div class="hero-left">
+          <div class="prob"><span id="prob-num">0</span><small>%</small></div>
+          <span class="prob-label">probabilidad estimada</span>
+          <p>De cada 100 niñas y niños con un perfil parecido, <strong><span id="prob-num2">0</span> tuvieron anemia</strong> en los registros históricos.</p>
+          <span class="pill" id="pill-riesgo"><span class="dot"></span><span id="pill-txt"></span></span>
+        </div>
+        <div class="hero-right">
+          <div class="dots" id="dots"></div>
+          <div class="legend">
+            <span class="sw"><span class="sq" style="background:var(--high)"></span>con anemia</span>
+            <span class="sw"><span class="sq" style="background:var(--line-soft)"></span>sin anemia</span>
+            <span class="sw"><span class="sq" style="border:2px solid var(--ink);box-sizing:border-box"></span>promedio general: <span id="prom-general">—</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button type="button" class="tab-btn active" data-tab="porque">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 21h4"></path><path d="M12 3a6 6 0 0 0-3.4 10.9c.6.4.9 1 .9 1.7V16h5v-.4c0-.7.3-1.3.9-1.7A6 6 0 0 0 12 3Z"></path></svg>
+          Por qué salió así
+        </button>
+        <button type="button" class="tab-btn" data-tab="hacer">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6.5l1.5 1.5L8 5.3"></path><path d="M11 6h9"></path><path d="M4 12.5l1.5 1.5L8 11.3"></path><path d="M11 12h9"></path><path d="M4 18.5l1.5 1.5L8 17.3"></path><path d="M11 18h9"></path></svg>
+          Qué hacer
+        </button>
+        <button type="button" class="tab-btn" data-tab="mensaje">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2"></rect><path d="M4 7l8 6 8-6"></path></svg>
+          Mensaje a la familia
+        </button>
+      </div>
+
+      <div class="tab-panel active" id="tab-porque">
+        <p class="tab-intro">Datos que más influyeron en este resultado puntual, no una regla general.</p>
+        <div id="factores-list"></div>
+        <div class="hr"></div>
+        <p style="margin:10px 0 0;font-size:13px;color:var(--mut)">El sistema nunca ve la hemoglobina de hoy: solo lo registrado antes de esta atención.</p>
+      </div>
+
+      <div class="tab-panel" id="tab-hacer">
+        <p class="tab-intro" id="hacer-intro"></p>
+        <div class="step"><span class="n">1</span><span class="t">Comparta el resultado con calma</span><span class="d">Es una señal de prioridad, no un diagnóstico.</span></div>
+        <div class="step" id="step-alto"><span class="n">2</span><span class="t">Sugiera un control de hemoglobina</span><span class="d">Oriente a la familia hacia el establecimiento elegido en el paso 2.</span></div>
+        <div class="step" id="step-bajo" style="display:none"><span class="n">2</span><span class="t">Refuerce hábitos saludables</span><span class="d">No hay señales urgentes; continúe con los controles de rutina.</span></div>
+        <div class="step" id="step-hierro"><span class="n">3</span><span class="t">Revise el suplemento de hierro</span><span class="d">No figura registrado en esta atención.</span></div>
+        <div class="note-box" style="margin-bottom:14px">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#4A4640" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5"></path><path d="M12 7.5v.5"></path></svg>
+          <p style="margin:0">Esto no reemplaza la evaluación del personal de salud.</p>
+        </div>
+        <button type="button" class="btn-accent" id="ir-a-mensaje">
+          Ir al mensaje para la familia
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h13"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+
+      <div class="tab-panel" id="tab-mensaje">
+        <p class="tab-intro" id="mensaje-intro"></p>
+        <textarea id="msg-familia" readonly></textarea>
+        <div class="msg-actions">
+          <button type="button" class="btn-accent" id="btn-copiar-msg">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#FAF9F5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2"></rect><path d="M5 15V5a2 2 0 0 1 2-2h10"></path></svg>
+            Copiar mensaje
+          </button>
+          <button type="button" class="btn-ghost" id="btn-imprimir-msg">Imprimir</button>
+          <span class="msg-copiado" id="msg-copiado">Copiado</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <span>Apoyo para docentes de educación inicial · No reemplaza la evaluación de un profesional de salud</span>
+  <span>Herramienta de tamizaje — no diagnostica ni indica tratamientos</span>
+</footer>
+</div>
+
+<div id="print-mensaje" class="print-only"></div>
+
+<div class="modal-bg" id="modal-ayuda">
+  <div class="modal">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:20px">
+      <h2>Cómo funciona en tres pasos</h2>
+      <button type="button" class="modal-close" id="modal-close" aria-label="Cerrar">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4A4640" stroke-width="2" stroke-linecap="round"><path d="M6 6 18 18"></path><path d="M18 6 6 18"></path></svg>
+      </button>
+    </div>
+    <div class="step"><span class="n" style="background:var(--ink)">1</span><span class="t">Se completan los datos disponibles</span><span class="d">Peso, talla, fecha de nacimiento, el establecimiento de referencia y el control de hemoglobina anterior, si lo hay.</span></div>
+    <div class="step"><span class="n" style="background:var(--ink)">2</span><span class="t">El sistema compara con miles de atenciones anteriores</span><span class="d">Busca niñas y niños con un perfil parecido y observa cuántos de ellos presentaron anemia.</span></div>
+    <div class="step"><span class="n" style="background:var(--ink)">3</span><span class="t">Devuelve una prioridad, no un diagnóstico</span><span class="d">Sirve para decidir a quién conviene llevar primero a un control de hemoglobina, y ayuda a preparar el mensaje para la familia.</span></div>
+    <div class="modal-warn">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#A9502F" stroke-width="2" stroke-linecap="round" style="flex-shrink:0;margin-top:2px"><path d="M12 9v4"></path><path d="M12 17v.5"></path><path d="M10.3 3.9 2.5 18a2 2 0 0 0 1.7 3h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"></path></svg>
+      <p style="margin:0">El sistema no diagnostica ni indica tratamientos. El rol del docente es informar y acompañar a la familia; la anemia se confirma únicamente con la prueba de hemoglobina realizada por personal de salud.</p>
+    </div>
+    <button type="button" class="modal-done" id="modal-done">Entendido</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body></html>
